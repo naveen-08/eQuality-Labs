@@ -8,9 +8,10 @@
 	<session-factory>
 		<!-- Database connection settings -->
 		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-		<property name="connection.url">jdbc:mysql://localhost:3306/equalityLabs_dev?allowPublicKeyRetrieval=true&amp;useSSL=false</property>
+		<!-- <property name="connection.url">jdbc:mysql://localhost:3306/equalityLabs_dev?allowPublicKeyRetrieval=true&amp;useSSL=false</property>-->
+		 <property name="connection.url">jdbc:mysql://localhost:3306/equality_prakat?allowPublicKeyRetrieval=true&amp;useSSL=false</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">Prakat123</property>
+		<property name="connection.password">root</property>
 		<property name="hibernate.format_sql">true</property>
 		<!-- JDBC connection pool (use the built-in) -->
 		<property name="connection.pool_size">1</property>
@@ -45,3 +46,4 @@
 		
 	</session-factory>
 </hibernate-configuration>
+
