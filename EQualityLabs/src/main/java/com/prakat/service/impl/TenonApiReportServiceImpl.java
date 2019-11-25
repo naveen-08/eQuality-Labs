@@ -96,7 +96,6 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			String emailId, int userId) throws MalformedURLException, URISyntaxException, EQualityLabsException {
 
 		// ResponseURL rs = getLinksFromWeb(url);
-
 		List<TenonByWCAG> tenonByWCAGs = new ArrayList<TenonByWCAG>();
 		TenonByWCAG tenonByWCAG = null;
 		List<TenonApiVo> tenonApiVos = new ArrayList<TenonApiVo>();
@@ -861,6 +860,9 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		rstyle.setFont(font);
 
 		reportHeader.getCell(3).setCellStyle(rstyle);
+		
+//		tenonApisList.get(0).setUserId(1);
+//		tenonApisList.get(0).setUrl("https://www.prakat.com/");
 
 		for (int i = 0; i < tenonApisList.size(); i++) {
 			TenonByWCAG vo = tenonApisList.get(i);
@@ -888,7 +890,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow urldetails = sheet.createRow(2);
 				urldetails.createCell(2).setCellValue("URL:");
 				urldetails.createCell(4).setCellValue("Count of issues by level AA:");
-				urldetails.createCell(5).setCellValue(vo.getCountBylevelAA());
+				urldetails.createCell(5).setCellValue(vo.getCountBylevelAA()); //vo.getCountBylevelAA()
 				urldetails.getCell(2).setCellStyle(pstyle);
 				urldetails.getCell(4).setCellStyle(pstyle);
 				urldetails.createCell(3).setCellValue(vo.getUrl());
@@ -897,7 +899,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow date = sheet.createRow(3);
 				date.createCell(2).setCellValue("Date Created:  ");
 				date.createCell(4).setCellValue("Count of issues by level AAA:");
-				date.createCell(5).setCellValue(vo.getCountBylevelAAA());
+				date.createCell(5).setCellValue(vo.getCountBylevelAAA()); //vo.getCountBylevelAAA()
 				date.getCell(2).setCellStyle(pstyle);
 				date.getCell(4).setCellStyle(pstyle);
 				// date.createCell(3).setCellValue(vo.getCreateDate());
@@ -907,16 +909,16 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow totaltest = sheet.createRow(4);
 				totaltest.createCell(2).setCellValue("Total no of Success criterion:    ");
 				totaltest.createCell(4).setCellValue("Total no of Issues ");
-				totaltest.createCell(5).setCellValue(vo.getTotalIssues());
+				totaltest.createCell(5).setCellValue(vo.getTotalIssues()); //vo.getTotalIssues()
 				totaltest.getCell(2).setCellStyle(pstyle);
 				totaltest.getCell(4).setCellStyle(pstyle);
-				totaltest.createCell(3).setCellValue(vo.getTotalNoOfTests());
+				totaltest.createCell(3).setCellValue(vo.getTotalNoOfTests()); //vo.getTotalNoOfTests()
 				totaltest.getCell(3).setCellStyle(ustyle);
 
 				XSSFRow failedTest = sheet.createRow(5);
 				failedTest.createCell(2).setCellValue("No of Failed criterion:    ");
 				failedTest.createCell(4).setCellValue("Total no of Errors ");
-				failedTest.createCell(5).setCellValue(vo.getTotalErrors());
+				failedTest.createCell(5).setCellValue(vo.getTotalErrors()); //vo.getTotalErrors()
 				failedTest.getCell(2).setCellStyle(pstyle);
 				failedTest.getCell(4).setCellStyle(pstyle);
 				failedTest.createCell(3).setCellValue(vo.getFailedTests());
@@ -925,10 +927,10 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow passedTest = sheet.createRow(6);
 				passedTest.createCell(2).setCellValue("No of Passed criterion:     ");
 				passedTest.createCell(4).setCellValue("Total no of Warnings ");
-				passedTest.createCell(5).setCellValue(vo.getTotalWarnings());
+				passedTest.createCell(5).setCellValue(vo.getTotalWarnings()); //vo.getTotalWarnings()
 				passedTest.getCell(2).setCellStyle(pstyle);
 				passedTest.getCell(4).setCellStyle(pstyle);
-				passedTest.createCell(3).setCellValue(vo.getPassedTests());
+				passedTest.createCell(3).setCellValue( vo.getPassedTests());// vo.getPassedTests()
 				passedTest.getCell(3).setCellStyle(ustyle);
 
 				// workbook = new XSSFWorkbook();
@@ -954,17 +956,17 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalErrors");
 				aRow.getCell(4).setCellStyle(estyle);
-				aRow.createCell(5).setCellValue(vo.getTotalErrors());
+				aRow.createCell(5).setCellValue(vo.getTotalErrors()); //vo.getTotalErrors()
 
 				aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalIssues");
 				aRow.getCell(4).setCellStyle(istyle);
-				aRow.createCell(5).setCellValue(vo.getTotalIssues());
+				aRow.createCell(5).setCellValue(vo.getTotalIssues()); //vo.getTotalIssues()
 
 				aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalWarning");
 				aRow.getCell(4).setCellStyle(wstyle);
-				aRow.createCell(5).setCellValue(vo.getTotalWarnings());
+				aRow.createCell(5).setCellValue(vo.getTotalWarnings());//vo.getTotalWarnings()
 
 				DefaultPieDataset dataset = new DefaultPieDataset();
 				dataset.setValue("Total no of success criterion", ((vo.getTotalNoOfTests()) != null ? Integer.parseInt(vo.getTotalNoOfTests()) : 0));
@@ -1076,7 +1078,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			}
 		}
 
-		String filename = "tenon_api" + "_" + dateFormat.format(exclDate) + ".xls";
+		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
+		String filename =  dir_path + "tenon_api" + "_" + dateFormat.format(exclDate) + ".xls";
 		// FileOutputStream o = new FileOutputStream(afileName);
 		File xls = new File(filename);
 		if (xls.createNewFile()) {
