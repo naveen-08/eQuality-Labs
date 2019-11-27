@@ -64,22 +64,22 @@ public class EmailSender {
 
 			// create the second message part
 			
-			 // MimeBodyPart mimeBodyPart2 = new MimeBodyPart();
+			  MimeBodyPart mimeBodyPart2 = new MimeBodyPart();
 			//  filename = "C:\\Users\\Prakat-L-055\\Documents\\tenon_api_2019-11-24_01_41_10.xls";
-			/*
-			 * ByteArrayOutputStream baos = new ByteArrayOutputStream(); try{
-			 * workbook.write(baos); byte[] bytes = baos.toByteArray(); ds = new
-			 * ByteArrayDataSource(bytes, "application/excel"); }catch (IOException ioe ){
-			 * ioe.printStackTrace(); } DataHandler dh = new DataHandler(ds);
-			 * mimeBodyPart2.setHeader("Content-Disposition",
-			 * "attachment;filename="+filename); mimeBodyPart2.setDataHandler(dh);
-			 * mimeBodyPart2.setFileName(filename);
-			 */
+			
+			  ByteArrayOutputStream baos = new ByteArrayOutputStream(); try{
+			  workbook.write(baos); byte[] bytes = baos.toByteArray(); ds = new
+			  ByteArrayDataSource(bytes, "application/excel"); }catch (IOException ioe ){
+			  ioe.printStackTrace(); } DataHandler dh = new DataHandler(ds);
+			  mimeBodyPart2.setHeader("Content-Disposition",
+			  "attachment;filename="+filename); mimeBodyPart2.setDataHandler(dh);
+			  mimeBodyPart2.setFileName(filename);
+			 
 			 
 			// create the Multipart and add its parts to it
 			Multipart multiPart = new MimeMultipart();
 			multiPart.addBodyPart(mimeBodyPart1);
-			//multiPart.addBodyPart(mimeBodyPart2);
+			multiPart.addBodyPart(mimeBodyPart2);
 			mimeMessage.setContent(multiPart);
 
 			Transport.send(mimeMessage);
