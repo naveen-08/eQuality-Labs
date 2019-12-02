@@ -200,29 +200,35 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			if (e.getMessage().equals("Server returned HTTP response code: 400 for URL: https://tenon.io/api/")) {
-				throw new EQualityLabsException("Server returned HTTP response code: 400 for URL: https://tenon.io/api/");  
+				throw new EQualityLabsException(
+						"Server returned HTTP response code: 400 for URL: https://tenon.io/api/");
 
-				/*tenonApiVo = new TenonApiVo();
-				tenonApiVos.add(tenonApiVo);
-				tenonByWCAG.setUrl("Server returned HTTP response code: 400 for URL: https://tenon.io/api/");
-				tenonByWCAG.setResultSetObj(tenonApiVos);*/
+				/*
+				 * tenonApiVo = new TenonApiVo(); tenonApiVos.add(tenonApiVo); tenonByWCAG.
+				 * setUrl("Server returned HTTP response code: 400 for URL: https://tenon.io/api/"
+				 * ); tenonByWCAG.setResultSetObj(tenonApiVos);
+				 */
 			}
 
 			if (e.getMessage().equals("Server returned HTTP response code: 402 for URL: https://tenon.io/api/")) {
-				throw new EQualityLabsException("Server returned HTTP response code: 402 for URL: https://tenon.io/api/");  
+				throw new EQualityLabsException(
+						"Server returned HTTP response code: 402 for URL: https://tenon.io/api/");
 
-				/*tenonApiVo = new TenonApiVo();
-				tenonApiVos.add(tenonApiVo);
-				tenonByWCAG.setUrl("Server returned HTTP response code: 402 for URL: https://tenon.io/api/");
-				tenonByWCAG.setResultSetObj(tenonApiVos);*/
+				/*
+				 * tenonApiVo = new TenonApiVo(); tenonApiVos.add(tenonApiVo); tenonByWCAG.
+				 * setUrl("Server returned HTTP response code: 402 for URL: https://tenon.io/api/"
+				 * ); tenonByWCAG.setResultSetObj(tenonApiVos);
+				 */
 			}
 			if (e.getMessage().equals("Server returned HTTP response code: 401 for URL: https://tenon.io/api/")) {
-				throw new EQualityLabsException("Server returned HTTP response code: 402 for URL: https://tenon.io/api/");  
+				throw new EQualityLabsException(
+						"Server returned HTTP response code: 402 for URL: https://tenon.io/api/");
 
-				/*tenonApiVo = new TenonApiVo();
-				tenonApiVos.add(tenonApiVo);
-				tenonByWCAG.setUrl("Server returned HTTP response code: 401 for URL: https://tenon.io/api/");
-				tenonByWCAG.setResultSetObj(tenonApiVos);*/
+				/*
+				 * tenonApiVo = new TenonApiVo(); tenonApiVos.add(tenonApiVo); tenonByWCAG.
+				 * setUrl("Server returned HTTP response code: 401 for URL: https://tenon.io/api/"
+				 * ); tenonByWCAG.setResultSetObj(tenonApiVos);
+				 */
 			}
 		}
 		tenonByWCAGs.add(tenonByWCAG);
@@ -263,21 +269,20 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 			// for (int i = 1; i < firstlevelUrl.size(); i++) {
 			/*
-			 * String levelFirstUrl = firstlevelUrl.get(i).replaceAll(" ",
-			 * "%20"); URL firstLevelUrl = new URL(levelurl); // this would
-			 * check for // the protocol firstLevelUrl.toURI(); String
-			 * DomainOfFirstLevelUrl = checkDomain(levelFirstUrl);
+			 * String levelFirstUrl = firstlevelUrl.get(i).replaceAll(" ", "%20"); URL
+			 * firstLevelUrl = new URL(levelurl); // this would check for // the protocol
+			 * firstLevelUrl.toURI(); String DomainOfFirstLevelUrl =
+			 * checkDomain(levelFirstUrl);
 			 * 
 			 * if (Domain.equals(DomainOfFirstLevelUrl)) { doc =
 			 * Jsoup.connect(levelFirstUrl)
 			 * .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0"
 			 * ) .timeout(1000000).referrer("http://www.google.com").
-			 * ignoreContentType(true).get(); Elements FirstLevelelements =
-			 * doc.select("a"); for (Element element : FirstLevelelements) {
+			 * ignoreContentType(true).get(); Elements FirstLevelelements = doc.select("a");
+			 * for (Element element : FirstLevelelements) {
 			 * //logger.debug("first Level urls--" + element.absUrl("href")); if
-			 * (!element.absUrl("href").contains("#") &&
-			 * !element.absUrl("href").equals("") &&
-			 * !setOfUrl.contains(element.absUrl("href")) &&
+			 * (!element.absUrl("href").contains("#") && !element.absUrl("href").equals("")
+			 * && !setOfUrl.contains(element.absUrl("href")) &&
 			 * !element.absUrl("href").contains("mailto")) {
 			 * setOfUrl.add(element.absUrl("href")); }
 			 * 
@@ -312,10 +317,10 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 	}
 
 	/*
-	 * private String checkDomain(String url) { // TODO Auto-generated method
-	 * stub String domain = ""; try { URI uri = new URI(url); domain =
-	 * uri.getHost(); } catch(URISyntaxException e) { domain ="illegal"; }
-	 * return domain.startsWith("www.") ? domain.substring(4) : domain; }
+	 * private String checkDomain(String url) { // TODO Auto-generated method stub
+	 * String domain = ""; try { URI uri = new URI(url); domain = uri.getHost(); }
+	 * catch(URISyntaxException e) { domain ="illegal"; } return
+	 * domain.startsWith("www.") ? domain.substring(4) : domain; }
 	 */
 
 	public static String getHost(String url) {
@@ -696,7 +701,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				int rowCount = 8;
 				List<TenonApiVo> res = vo.getResultSetObj();
 				XSSFRow aRow = Excelsheet.createRow(rowCount++);
-				if (vo.getUrl() != null && res!=null) {
+				if (vo.getUrl() != null && res != null) {
 					for (TenonApiVo result : res) {
 						aRow = Excelsheet.createRow(rowCount++);
 						aRow.createCell(0).setCellValue(vo.getUrl());
@@ -812,7 +817,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			logger.debug("File already exists.");
 		}
 
-		isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		// isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		isMailSent = true;
 		return isMailSent;
 
 	}
@@ -860,7 +866,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		rstyle.setFont(font);
 
 		reportHeader.getCell(3).setCellStyle(rstyle);
-		
+
 //		tenonApisList.get(0).setUserId(1);
 //		tenonApisList.get(0).setUrl("https://www.prakat.com/");
 
@@ -890,7 +896,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow urldetails = sheet.createRow(2);
 				urldetails.createCell(2).setCellValue("URL:");
 				urldetails.createCell(4).setCellValue("Count of issues by level AA:");
-				urldetails.createCell(5).setCellValue(vo.getCountBylevelAA()); //vo.getCountBylevelAA()
+				urldetails.createCell(5).setCellValue(vo.getCountBylevelAA()); // vo.getCountBylevelAA()
 				urldetails.getCell(2).setCellStyle(pstyle);
 				urldetails.getCell(4).setCellStyle(pstyle);
 				urldetails.createCell(3).setCellValue(vo.getUrl());
@@ -899,7 +905,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow date = sheet.createRow(3);
 				date.createCell(2).setCellValue("Date Created:  ");
 				date.createCell(4).setCellValue("Count of issues by level AAA:");
-				date.createCell(5).setCellValue(vo.getCountBylevelAAA()); //vo.getCountBylevelAAA()
+				date.createCell(5).setCellValue(vo.getCountBylevelAAA()); // vo.getCountBylevelAAA()
 				date.getCell(2).setCellStyle(pstyle);
 				date.getCell(4).setCellStyle(pstyle);
 				// date.createCell(3).setCellValue(vo.getCreateDate());
@@ -909,16 +915,16 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow totaltest = sheet.createRow(4);
 				totaltest.createCell(2).setCellValue("Total no of Success criterion:    ");
 				totaltest.createCell(4).setCellValue("Total no of Issues ");
-				totaltest.createCell(5).setCellValue(vo.getTotalIssues()); //vo.getTotalIssues()
+				totaltest.createCell(5).setCellValue(vo.getTotalIssues()); // vo.getTotalIssues()
 				totaltest.getCell(2).setCellStyle(pstyle);
 				totaltest.getCell(4).setCellStyle(pstyle);
-				totaltest.createCell(3).setCellValue(vo.getTotalNoOfTests()); //vo.getTotalNoOfTests()
+				totaltest.createCell(3).setCellValue(vo.getTotalNoOfTests()); // vo.getTotalNoOfTests()
 				totaltest.getCell(3).setCellStyle(ustyle);
 
 				XSSFRow failedTest = sheet.createRow(5);
 				failedTest.createCell(2).setCellValue("No of Failed criterion:    ");
 				failedTest.createCell(4).setCellValue("Total no of Errors ");
-				failedTest.createCell(5).setCellValue(vo.getTotalErrors()); //vo.getTotalErrors()
+				failedTest.createCell(5).setCellValue(vo.getTotalErrors()); // vo.getTotalErrors()
 				failedTest.getCell(2).setCellStyle(pstyle);
 				failedTest.getCell(4).setCellStyle(pstyle);
 				failedTest.createCell(3).setCellValue(vo.getFailedTests());
@@ -927,10 +933,10 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow passedTest = sheet.createRow(6);
 				passedTest.createCell(2).setCellValue("No of Passed criterion:     ");
 				passedTest.createCell(4).setCellValue("Total no of Warnings ");
-				passedTest.createCell(5).setCellValue(vo.getTotalWarnings()); //vo.getTotalWarnings()
+				passedTest.createCell(5).setCellValue(vo.getTotalWarnings()); // vo.getTotalWarnings()
 				passedTest.getCell(2).setCellStyle(pstyle);
 				passedTest.getCell(4).setCellStyle(pstyle);
-				passedTest.createCell(3).setCellValue( vo.getPassedTests());// vo.getPassedTests()
+				passedTest.createCell(3).setCellValue(vo.getPassedTests());// vo.getPassedTests()
 				passedTest.getCell(3).setCellStyle(ustyle);
 
 				// workbook = new XSSFWorkbook();
@@ -956,23 +962,26 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				XSSFRow aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalErrors");
 				aRow.getCell(4).setCellStyle(estyle);
-				aRow.createCell(5).setCellValue(vo.getTotalErrors()); //vo.getTotalErrors()
+				aRow.createCell(5).setCellValue(vo.getTotalErrors()); // vo.getTotalErrors()
 
 				aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalIssues");
 				aRow.getCell(4).setCellStyle(istyle);
-				aRow.createCell(5).setCellValue(vo.getTotalIssues()); //vo.getTotalIssues()
+				aRow.createCell(5).setCellValue(vo.getTotalIssues()); // vo.getTotalIssues()
 
 				aRow = pieSheet.createRow(rowCount++);
 				aRow.createCell(4).setCellValue("totalWarning");
 				aRow.getCell(4).setCellStyle(wstyle);
-				aRow.createCell(5).setCellValue(vo.getTotalWarnings());//vo.getTotalWarnings()
+				aRow.createCell(5).setCellValue(vo.getTotalWarnings());// vo.getTotalWarnings()
 
 				DefaultPieDataset dataset = new DefaultPieDataset();
-				dataset.setValue("Total no of success criterion", ((vo.getTotalNoOfTests()) != null ? Integer.parseInt(vo.getTotalNoOfTests()) : 0));
-				dataset.setValue("No of failed test", ((vo.getFailedTests()) != null ? Integer.parseInt(vo.getFailedTests()) : 0));
-				dataset.setValue("No of passed test", ((vo.getPassedTests()) != null ? Integer.parseInt(vo.getPassedTests()) : 0));
-				
+				dataset.setValue("Total no of success criterion",
+						((vo.getTotalNoOfTests()) != null ? Integer.parseInt(vo.getTotalNoOfTests()) : 0));
+				dataset.setValue("No of failed test",
+						((vo.getFailedTests()) != null ? Integer.parseInt(vo.getFailedTests()) : 0));
+				dataset.setValue("No of passed test",
+						((vo.getPassedTests()) != null ? Integer.parseInt(vo.getPassedTests()) : 0));
+
 				pieSheet.autoSizeColumn(50);
 				JFreeChart myPieChart = ChartFactory.createPieChart3D("Report details", dataset, true, true, true);
 
@@ -991,8 +1000,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 				/*
 				 * File imageFile = new File("E:\\LineChart.png");
-				 * ChartUtilities.saveChartAsJPEG((imageFile), myPieChart, 400,
-				 * 300);
+				 * ChartUtilities.saveChartAsJPEG((imageFile), myPieChart, 400, 300);
 				 */
 				BufferedImage bufferedImage = myPieChart.createBufferedImage(width, height);
 				saveToFile(bufferedImage, request);
@@ -1044,7 +1052,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			XSSFRow aRow = sheet.createRow(rowCount++);
 			res = urlvo.getResultSetObj();
 
-			if (urlvo.getUrl() != null && res !=null) {
+			if (urlvo.getUrl() != null && res != null) {
 				for (TenonApiVo result : res) {
 
 					aRow = sheet.createRow(rowCount++);
@@ -1062,7 +1070,6 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 					aRow.createCell(8).setCellValue(result.getSublevel_Description());
 
 				}
-				
 
 			} else {
 
@@ -1079,7 +1086,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		}
 
 		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
-		String filename =  dir_path + "tenon_api" + "_" + dateFormat.format(exclDate) + ".xls";
+		String filename = dir_path + "tenon_api" + "_" + dateFormat.format(exclDate) + ".xls";
 		// FileOutputStream o = new FileOutputStream(afileName);
 		File xls = new File(filename);
 		if (xls.createNewFile()) {
@@ -1087,7 +1094,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		} else {
 			logger.debug("File already exists.");
 		}
-		boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		//boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		boolean isMailSent =true;
 		return isMailSent;
 
 	}
@@ -1259,8 +1267,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 				/*
 				 * File imageFile = new File("E:\\LineChart.png");
-				 * ChartUtilities.saveChartAsJPEG((imageFile), myPieChart, 400,
-				 * 300);
+				 * ChartUtilities.saveChartAsJPEG((imageFile), myPieChart, 400, 300);
 				 */
 				BufferedImage bufferedImage = myPieChart.createBufferedImage(width, height);
 				saveToFile(bufferedImage, request);
@@ -1466,7 +1473,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 					tenonByWCAG.setCountBylevelAA(null);
 					tenonByWCAG.setCountBylevelAAA(null);
 					tenonApiVos.add(tenonApiVo);
-					tenonByWCAG.setUrl("There is issue with retriving response from tenon api as Server returned HTTP response code 400 for URL: https://tenon.io/api/");
+					tenonByWCAG.setUrl(
+							"There is issue with retriving response from tenon api as Server returned HTTP response code 400 for URL: https://tenon.io/api/");
 					tenonByWCAG.setResultSetObj(tenonApiVos);
 
 				}
@@ -1480,7 +1488,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 					tenonByWCAG.setCountBylevelAA(null);
 					tenonByWCAG.setCountBylevelAAA(null);
 					tenonApiVos.add(tenonApiVo);
-					tenonByWCAG.setUrl("There is issue with retriving response from tenon api as Server returned HTTP response code 402 for URL: https://tenon.io/api/");
+					tenonByWCAG.setUrl(
+							"There is issue with retriving response from tenon api as Server returned HTTP response code 402 for URL: https://tenon.io/api/");
 					tenonByWCAG.setResultSetObj(tenonApiVos);
 
 				}
@@ -1547,12 +1556,12 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			TenonByWCAG vo = tenonByWCAGs.get(i);
 
 			/*
-			 * dataset1.addValue(Integer.parseInt(vo.getTotalNoOfTests()),vo.
-			 * getUrl(), "Total no of test" );
+			 * dataset1.addValue(Integer.parseInt(vo.getTotalNoOfTests()),vo. getUrl(),
+			 * "Total no of test" );
 			 * dataset1.addValue(Integer.parseInt(vo.getFailedTests()),
 			 * vo.getUrl(),"No of failed test");
-			 * dataset1.addValue(Integer.parseInt(vo.getPassedTests()),vo.getUrl
-			 * (), "No of passed test");
+			 * dataset1.addValue(Integer.parseInt(vo.getPassedTests()),vo.getUrl (),
+			 * "No of passed test");
 			 */
 			dataset1.addValue((vo.getFailedTests()) != null ? Integer.parseInt(vo.getFailedTests()) : 0, vo.getUrl(),
 					"No of failed test");

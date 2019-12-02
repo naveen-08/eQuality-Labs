@@ -88,7 +88,6 @@ public class EQualityLabsController {
 			
 			logger.debug("size after adding --" + tenonApiVos.size());
 			modelMap.addAttribute("weburls", tenonApiVos);
-			
 			}
 			else
 			{	for (TenonByWCAG vo : tenonApiVos) {
