@@ -82,8 +82,9 @@ public class EQualityLabsController {
 			int userId = userDetails.getUserId();
 			List<TenonByWCAG> tenonApiVos = tenonService.getTenonReportServiceByWCAGForFreeUser(tenonApiURL, domainUrl,
 					apiKey, emailId, userId);
-			
-		
+			for(int i=0;i<=tenonApiVos.size()-1;i++) {
+				System.out.println("tenoon api vos isss...!!!"+tenonApiVos.get(i));
+			}
 			if(!tenonApiVos.isEmpty()){
 			
 			logger.debug("size after adding --" + tenonApiVos.size());

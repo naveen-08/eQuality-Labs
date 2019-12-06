@@ -127,6 +127,7 @@ public class TenonApiDaoImpl implements TenonApiDao {
 
 		Transaction txn = null;
 		try {
+			System.out.println("witiout is comming");
 			SessionFactory sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
 			session = sessionFactory.openSession();
 			txn = session.beginTransaction();

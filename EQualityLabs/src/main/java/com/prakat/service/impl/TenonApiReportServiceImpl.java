@@ -101,7 +101,6 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		List<TenonApiVo> tenonApiVos = new ArrayList<TenonApiVo>();
 		TenonApiVo tenonApiVo = null;
 		List<String> urls = new ArrayList<String>();
-
 		urls.add(url);
 		// for (String urlName : rs.getSetOfURL()) {
 		// for (String urlName : url) {
@@ -137,10 +136,12 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			rd.close();
 
 			JSONObject json = new JSONObject(response.toString());
+
 			JSONObject json1 = (json.getJSONObject("request"));
 			logger.debug(json1.getString("url"));
 			tenonByWCAG.setUrl(json1.getString("url"));
 			JSONArray array = json.getJSONArray("resultSet");
+
 			if (array.length() == 0) {
 				tenonApiVo = new TenonApiVo();
 
@@ -162,6 +163,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 							tenonApidetails.getWCAG_Level() + "." + tenonApidetails.getWCAG_Principle() + "."
 									+ tenonApidetails.getWCAG_Guideline() + "_" + tenonApidetails.getWCAG_Sublevel());
 					tenonApiVos.add(tenonApiVo);
+
 				}
 
 				logger.debug("printing tenon lists size--" + tenonApiVos.size());
@@ -825,10 +827,14 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 	public boolean CreateWorkBookByWCAGForFreeUser(List<TenonByWCAG> tenonApisList, HttpServletRequest request,
 			HttpServletResponse response, String emailId) throws IOException {
+
 		Date exclDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
+		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
+		String filename = dir_path + "tenon_api" + "_" + 5 + ".xlsx";
 		// create a new Excel sheet
-		XSSFWorkbook workbook = new XSSFWorkbook();
+		FileInputStream fis = new FileInputStream(new File(filename));
+		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.createSheet("Tenon Accesbility Report Details");
 		sheet.setDefaultColumnWidth(30);
 
@@ -877,7 +883,6 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				reportDetails.createCell(2).setCellValue("Project name:");
 				reportDetails.createCell(4).setCellValue("Count of issues by level A:");
 				reportDetails.createCell(5).setCellValue(vo.getCountBylevelA());
-
 				reportDetails.createCell(3).setCellValue("EQuality Labs");
 
 				CellStyle pstyle = workbook.createCellStyle();
@@ -1028,23 +1033,27 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		header.createCell(2).setCellValue("Level");
 		header.getCell(2).setCellStyle(style);
 
-		header.createCell(3).setCellValue("WCAG Principle");
+		/*
+		 * header.createCell(3).setCellValue("WCAG Principle");
+		 * header.getCell(3).setCellStyle(style);
+		 */
+		header.createCell(3).setCellValue("Principle description");
 		header.getCell(3).setCellStyle(style);
 
-		header.createCell(4).setCellValue("Principle description");
+		header.createCell(4).setCellValue("WCAG Guideline");
 		header.getCell(4).setCellStyle(style);
 
-		header.createCell(5).setCellValue("WCAG Guideline");
+		header.createCell(5).setCellValue("Guideline Description");
 		header.getCell(5).setCellStyle(style);
 
-		header.createCell(6).setCellValue("Guideline Description");
-		header.getCell(6).setCellStyle(style);
-
-		header.createCell(7).setCellValue("WCAG_Sublevel");
-		header.getCell(7).setCellStyle(style);
-
-		header.createCell(8).setCellValue("Sublevel Description");
-		header.getCell(8).setCellStyle(style);
+		/*
+		 * header.createCell(7).setCellValue("WCAG_Sublevel");
+		 * header.getCell(7).setCellStyle(style);
+		 */
+		/*
+		 * header.createCell(8).setCellValue("Sublevel Description");
+		 * header.getCell(8).setCellStyle(style);
+		 */
 		// create data rows
 		int rowCount = 8;
 		List<TenonApiVo> res = new ArrayList<TenonApiVo>();
@@ -1054,25 +1063,28 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 			if (urlvo.getUrl() != null && res != null) {
 				for (TenonApiVo result : res) {
-
+					String s = result.getWCAG_Level();
+					String[] str = s.split("2");
+					String s1 = str[1];
+					String s2 = urlvo.getUrl();
+					String s3 = s2.replaceAll("/tenon.io/", "/equality_labs/");
 					aRow = sheet.createRow(rowCount++);
-					aRow.createCell(0).setCellValue(urlvo.getUrl());
+					aRow.createCell(0).setCellValue(s3);
 					aRow.createCell(1).setCellValue(result.getWCAG_Criteria());
-					aRow.createCell(2).setCellValue(result.getWCAG_Level());
+					aRow.createCell(2).setCellValue(s1);
 
-					aRow.createCell(3).setCellValue(result.getWCAG_Principle());
-					aRow.createCell(4).setCellValue(result.getPrinciple_Description());
+					// aRow.createCell(3).setCellValue(result.getWCAG_Principle());
+					aRow.createCell(3).setCellValue(result.getPrinciple_Description());
 
-					aRow.createCell(5).setCellValue(result.getWCAG_Guideline());
-					aRow.createCell(6).setCellValue(result.getGuideline_Description());
+					aRow.createCell(4).setCellValue(result.getWCAG_Guideline());
+					aRow.createCell(5).setCellValue(result.getGuideline_Description());
 
-					aRow.createCell(7).setCellValue(result.getWCAG_Sublevel());
-					aRow.createCell(8).setCellValue(result.getSublevel_Description());
+					// aRow.createCell(7).setCellValue(result.getWCAG_Sublevel());
+					// aRow.createCell(8).setCellValue(result.getSublevel_Description());
 
 				}
 
 			} else {
-
 				aRow.createCell(0).setCellValue("");
 				aRow.createCell(1).setCellValue("");
 				aRow.createCell(2).setCellValue("");
@@ -1085,17 +1097,18 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			}
 		}
 
-		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
-		String filename = dir_path + "tenon_api" + "_" + dateFormat.format(exclDate) + ".xls";
 		// FileOutputStream o = new FileOutputStream(afileName);
-		File xls = new File(filename);
-		if (xls.createNewFile()) {
-			logger.debug("File is created!");
-		} else {
-			logger.debug("File already exists.");
-		}
-		//boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
-		boolean isMailSent =true;
+		FileOutputStream fos = new FileOutputStream(new File(filename));
+		workbook.write(fos);
+		fos.close();
+
+		// File xls = new File(filename);
+		/*
+		 * if (xls.createNewFile()) { logger.debug("File is created!"); } else {
+		 * logger.debug("File already exists."); }
+		 */
+		// boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		boolean isMailSent = true;
 		return isMailSent;
 
 	}
