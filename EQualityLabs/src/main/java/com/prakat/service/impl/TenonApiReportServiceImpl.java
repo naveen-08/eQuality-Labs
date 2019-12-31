@@ -25,15 +25,20 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.*;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -42,6 +47,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
@@ -56,6 +62,7 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.json.JSONArray;
@@ -69,6 +76,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 
 import com.java.exception.EQualityLabsException;
+import com.lowagie.text.Cell;
 import com.prakat.dao.impl.TenonApiDaoImpl;
 import com.prakat.model.EQualityLabsVo;
 import com.prakat.model.ResultsetVo;
@@ -108,6 +116,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		tenonByWCAG = new TenonByWCAG();
 
 		String urlParameters = "key=" + key + "&url=" + url;
+		System.out.println("url parameter......!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + urlParameters);
 
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 		int postDataLength = postData.length;
@@ -831,7 +840,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		Date exclDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
 		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
-		String filename = dir_path + "tenon_api" + "_" + 5 + ".xlsx";
+		String filename = dir_path + "tenon_api" + "_" + 7 + ".xlsx";
 		// create a new Excel sheet
 		FileInputStream fis = new FileInputStream(new File(filename));
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -958,34 +967,34 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				istyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 				istyle.setFont(font);
 
-				CellStyle wstyle = workbook.createCellStyle();
-				wstyle.setFillForegroundColor(HSSFColor.BROWN.index);
-				wstyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-				wstyle.setFont(font);
+//				CellStyle wstyle = workbook.createCellStyle();
+//				wstyle.setFillForegroundColor(HSSFColor.BROWN.index);
+//				wstyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+//				wstyle.setFont(font);
 
 				int rowCount = 28;
 				XSSFRow aRow = pieSheet.createRow(rowCount++);
-				aRow.createCell(4).setCellValue("totalErrors");
+				aRow.createCell(4).setCellValue("passed Test");
 				aRow.getCell(4).setCellStyle(estyle);
-				aRow.createCell(5).setCellValue(vo.getTotalErrors()); // vo.getTotalErrors()
+				aRow.createCell(5).setCellValue(vo.getPassedTests()); // vo.getTotalErrors()
 
 				aRow = pieSheet.createRow(rowCount++);
-				aRow.createCell(4).setCellValue("totalIssues");
+				aRow.createCell(4).setCellValue("Failed Test");
 				aRow.getCell(4).setCellStyle(istyle);
-				aRow.createCell(5).setCellValue(vo.getTotalIssues()); // vo.getTotalIssues()
+				aRow.createCell(5).setCellValue(vo.getFailedTests()); // vo.getTotalIssues()
 
-				aRow = pieSheet.createRow(rowCount++);
-				aRow.createCell(4).setCellValue("totalWarning");
-				aRow.getCell(4).setCellStyle(wstyle);
-				aRow.createCell(5).setCellValue(vo.getTotalWarnings());// vo.getTotalWarnings()
+//				aRow = pieSheet.createRow(rowCount++);
+//				aRow.createCell(4).setCellValue("totalWarning");
+//				aRow.getCell(4).setCellStyle(wstyle);
+//				aRow.createCell(5).setCellValue(vo.getTotalWarnings());// vo.getTotalWarnings()
 
 				DefaultPieDataset dataset = new DefaultPieDataset();
-				dataset.setValue("Total no of success criterion",
+				dataset.setValue("Passed Test",
 						((vo.getTotalNoOfTests()) != null ? Integer.parseInt(vo.getTotalNoOfTests()) : 0));
-				dataset.setValue("No of failed test",
+				dataset.setValue("Failed test",
 						((vo.getFailedTests()) != null ? Integer.parseInt(vo.getFailedTests()) : 0));
-				dataset.setValue("No of passed test",
-						((vo.getPassedTests()) != null ? Integer.parseInt(vo.getPassedTests()) : 0));
+//				dataset.setValue("No of passed test",
+//						((vo.getPassedTests()) != null ? Integer.parseInt(vo.getPassedTests()) : 0));
 
 				pieSheet.autoSizeColumn(50);
 				JFreeChart myPieChart = ChartFactory.createPieChart3D("Report details", dataset, true, true, true);
@@ -1019,6 +1028,55 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				my_picture.resize();
 
 				// break;
+
+				///// ----Bar Chart-------/////
+				XSSFSheet barSheet = workbook.createSheet("Bar Sheet" + "_" + i + dateFormat.format(exclDate));
+				DefaultCategoryDataset my_bar_chart_dataset = new DefaultCategoryDataset();
+				//// ----Bar Data----///
+
+				String chart_label = "total issues";
+				double chart_data_issue = Double.valueOf(vo.getTotalIssues());
+				double chart_data_warning = Double.valueOf(vo.getTotalWarnings());
+				double chart_data_error = Double.valueOf(vo.getTotalErrors());
+//				if (chart_label != null) {
+//					for (int j = 1; i <= 3; j++) {
+//						if (j == 1) {
+//							chart_data = Double.valueOf(vo.getTotalIssues());
+//							chart_label = "total issues";
+//
+//						} else if (j == 2) {
+//							chart_data = Double.valueOf(vo.getTotalWarnings());
+//							chart_label = "total warning";
+//						} else if (j == 3) {
+//							chart_data = Double.valueOf(vo.getTotalErrors());
+//							chart_label = "total errors";
+//						}
+//
+//						my_bar_chart_dataset.addValue(chart_data, "Bar", chart_label);
+//					}
+//				}
+
+				my_bar_chart_dataset.addValue(chart_data_warning, "Bar", "total warning");
+				my_bar_chart_dataset.addValue(chart_data_error, "Bar", "total errors");
+				///// ----end bar chart-----//////
+				JFreeChart BarChartObject = ChartFactory.createBarChart("Issue Status", "Total Issues", "Bar",
+						my_bar_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+				int BarChartwidht = 640;
+				int BarChartheight = 480;
+				ByteArrayOutputStream bar_chart_out = new ByteArrayOutputStream();
+				ChartUtilities.writeChartAsPNG(bar_chart_out, BarChartObject, BarChartwidht, BarChartheight);
+				int bar_picture_id = workbook.addPicture(bar_chart_out.toByteArray(), Workbook.PICTURE_TYPE_PNG);
+				chart_out.close();
+				XSSFDrawing barDrawing = barSheet.createDrawingPatriarch();
+				ClientAnchor bar_anchor = new XSSFClientAnchor();
+				bar_anchor.setCol1(4);
+				bar_anchor.setRow1(5);
+				XSSFPicture bar_picture = barDrawing.createPicture(bar_anchor, bar_picture_id);
+				bar_picture.resize();
+
+				//// -----end bar chart----/////
+
 			}
 		}
 
