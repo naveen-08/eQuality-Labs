@@ -33,9 +33,11 @@ import com.prakat.globalservice.MailService;
 import com.prakat.model.EQualityLabsVo;
 import com.prakat.model.TenonByWCAG;
 import com.prakat.model.UserDetailsVo;
+import com.prakat.model.WaveApiByWCAG;
 import com.prakat.response.ResponseURL;
 import com.prakat.service.EQualityLabsService;
 import com.prakat.service.impl.TenonApiReportServiceImpl;
+import com.prakat.service.impl.WaveApiReportService;
 import com.prakat.util.AES256EncryptionDecryption;
 import com.prakat.util.EQualityLabsUtil;
 
@@ -59,6 +61,8 @@ public class EQualityLabsController {
 	EQualityLabsService equalityLabsServiceImpl;
 	@Autowired
 	EQualityLabsUtil util;
+	@Autowired
+	WaveApiReportService waveApiService;
 
 	static Logger logger = Logger.getLogger(EQualityLabsController.class.getName());
 
@@ -67,49 +71,55 @@ public class EQualityLabsController {
 	public String processFreeUserRequest(HttpServletRequest request, HttpSession session, ModelMap modelMap,
 			HttpServletResponse httpresponse) throws Exception {
 		String emailId = (String) session.getAttribute("emailId");
-		/*if (emailId==null) {
-			return "login";
-		}*/
-		
+		/*
+		 * if (emailId==null) { return "login"; }
+		 */
+
 		String domainUrl = request.getParameter("domainUrl");
-		
-	
+
 		if (util.isValidUrl(domainUrl)) {
 			String tenonApiURL = env.getProperty("tenonApiUrl");
 			String apiKey = env.getProperty("tenonApiAuthorizeKey");
+			String waveApiUrl = env.getProperty("waveApiUrl");
+			String waveApiKey = env.getProperty("waveApiKey");
 
 			UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(emailId);
 			int userId = userDetails.getUserId();
 			List<TenonByWCAG> tenonApiVos = tenonService.getTenonReportServiceByWCAGForFreeUser(tenonApiURL, domainUrl,
 					apiKey, emailId, userId);
-			for(int i=0;i<=tenonApiVos.size()-1;i++) {
-				System.out.println("tenoon api vos isss...!!!"+tenonApiVos.get(i));
+			List<WaveApiByWCAG> waveApi=waveApiService.waveApiMethod(waveApiKey, waveApiUrl,domainUrl,userId);
+
+			for (int i = 0; i <= tenonApiVos.size() - 1; i++) {
+				System.out.println("tenoon api vos isss...!!!" + tenonApiVos.get(i));
 			}
-			if(!tenonApiVos.isEmpty()){
-			
-			logger.debug("size after adding --" + tenonApiVos.size());
-			modelMap.addAttribute("weburls", tenonApiVos);
-			}
-			else
-			{	for (TenonByWCAG vo : tenonApiVos) {
-				vo.setTotalErrors(vo.getFailedTests());
-				vo.setTotalErrors(vo.getPassedTests());
-				vo.setTotalErrors(vo.getTotalNoOfTests());
-				tenonApiVos.add(vo);
-			}
+			if (!tenonApiVos.isEmpty()) {
+
+				logger.debug("size after adding --" + tenonApiVos.size());
 				modelMap.addAttribute("weburls", tenonApiVos);
-             }
+			} else {
+				for (TenonByWCAG vo : tenonApiVos) {
+					vo.setTotalErrors(vo.getFailedTests());
+					vo.setTotalErrors(vo.getPassedTests());
+					vo.setTotalErrors(vo.getTotalNoOfTests());
+					tenonApiVos.add(vo);
+				}
+				modelMap.addAttribute("weburls", tenonApiVos);
+			}
 			getTenonreportForFreeUser(modelMap, httpresponse, request, emailId);
-			}
-		
+		}
+
 		else {
-		  modelMap.addAttribute("weburls", "");
-			}
-		
-		return  "tenon_report";
+			modelMap.addAttribute("weburls", "");
+		}
+
+		return "tenon_report";
 	}
-		
-	
+
+	private void waveApiMethod(String waveApiKey, String waveApiUrl) {
+
+		String urlParameter = "key=" + waveApiKey + "&url=" + waveApiUrl;
+
+	}
 
 	@RequestMapping(value = "/processprouser", method = RequestMethod.POST)
 	public String proUserPostRequest(HttpServletRequest request, HttpServletResponse response, HttpSession session,
@@ -119,34 +129,34 @@ public class EQualityLabsController {
 		int limit = 25;
 		String emailId = (String) session.getAttribute("emailId");
 		if (limit <= 25) {
-		for (int i = 0; i < arr.length; i++) {
-			ResponseURL rs = util.getLinksFromWeb(arr[i]);
+			for (int i = 0; i < arr.length; i++) {
+				ResponseURL rs = util.getLinksFromWeb(arr[i]);
+			}
+
+			String apiKey = env.getProperty("tenonApiAuthorizeKey");
+			String tenonApiURL = env.getProperty("tenonApiUrl");
+
+			UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(emailId);
+			int userId = userDetails.getUserId();
+			List<TenonByWCAG> tenonByWCAGs = tenonService.getTenonReportServiceByWCAGForProLevel(tenonApiURL, arr,
+					apiKey, userId, domainUrl);
+
+			/*
+			 * for (TenonByWCAG vo : tenonByWCAGs) { modelMap.addAttribute("totalErrors",
+			 * vo.getTotalErrors()); modelMap.addAttribute("totalIssues",
+			 * vo.getTotalIssues()); modelMap.addAttribute("totalWarning",
+			 * vo.getTotalWarnings()); }
+			 */
+
+			logger.debug("size after adding --" + tenonByWCAGs.size());
+			modelMap.addAttribute("weburls", tenonByWCAGs);
+			getTenonReportForProUser(modelMap, response, request, emailId);
 		}
-
-		String apiKey = env.getProperty("tenonApiAuthorizeKey");
-		String tenonApiURL = env.getProperty("tenonApiUrl");
-		
-		UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(emailId);
-        int userId = userDetails.getUserId();
-		List<TenonByWCAG> tenonByWCAGs = tenonService.getTenonReportServiceByWCAGForProLevel(tenonApiURL, arr, apiKey,userId,domainUrl);
-
-		/*
-		for (TenonByWCAG vo : tenonByWCAGs) {
-			modelMap.addAttribute("totalErrors", vo.getTotalErrors());
-			modelMap.addAttribute("totalIssues", vo.getTotalIssues());
-			modelMap.addAttribute("totalWarning", vo.getTotalWarnings());
-		}*/
-		 
-		logger.debug("size after adding --" + tenonByWCAGs.size());
-		modelMap.addAttribute("weburls", tenonByWCAGs);
-		getTenonReportForProUser(modelMap, response, request, emailId);
-}
 
 		return "tenon_ProUserReport";
 
 	}
-	
-	
+
 	public void getTenonreportForFreeUser(ModelMap modelMap, HttpServletResponse response, HttpServletRequest request,
 			String emailId) throws IOException {
 		boolean isMailSent = false;
@@ -174,18 +184,18 @@ public class EQualityLabsController {
 			throws Exception {
 		return "tenon_report";
 	}
-	
+
 	@RequestMapping(value = "/myProfile", method = RequestMethod.GET)
 	public String getMyProfilePage(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse)
 			throws Exception {
 		return "myProfile";
 	}
 
-	/*@RequestMapping(value = "/error", method = RequestMethod.GET)
-	public String getErrorPage(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse)
-			throws Exception {
-		return "error";
-	}*/
+	/*
+	 * @RequestMapping(value = "/error", method = RequestMethod.GET) public String
+	 * getErrorPage(HttpServletRequest request, ModelMap modelMap,
+	 * HttpServletResponse httpresponse) throws Exception { return "error"; }
+	 */
 
 	@RequestMapping(value = "/eQuality_aboutus", method = RequestMethod.GET)
 	public String getAboutUs(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse)
@@ -240,16 +250,16 @@ public class EQualityLabsController {
 			throws Exception {
 		return "payPal";
 	}
-	
-	
+
 	@RequestMapping(value = "/myProfileDetails", method = RequestMethod.GET)
 	public String getmyProfileDetails(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse)
 			throws Exception {
-		
-		 String email=request.getParameter("email");	 
-		 UserDetailsVo userDetails =equalityLabsServiceImpl.fetchRegisteredUserDetails(email);;
-		 modelMap.addAttribute("userDetails", userDetails);
-	    	return "myProfile";
+
+		String email = request.getParameter("email");
+		UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(email);
+		;
+		modelMap.addAttribute("userDetails", userDetails);
+		return "myProfile";
 	}
 
 	@RequestMapping(value = "/trust_mark", method = RequestMethod.GET)
@@ -257,7 +267,7 @@ public class EQualityLabsController {
 			throws Exception {
 		return "trust_mark";
 	}
-	
+
 	@RequestMapping(value = "/resources", method = RequestMethod.GET)
 	public String getResources(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse)
 			throws Exception {
@@ -265,16 +275,15 @@ public class EQualityLabsController {
 	}
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
-	public String getTestPage(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse,HttpSession session)
-			throws Exception {
+	public String getTestPage(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse,
+			HttpSession session) throws Exception {
 		String emailId = (String) session.getAttribute("emailId");
-		if (emailId==null) {
+		if (emailId == null) {
 			return "login";
-		}else {
+		} else {
 			return "test";
 		}
-		
-		
+
 	}
 
 	@RequestMapping(value = "/training&Certification", method = RequestMethod.GET)
@@ -311,7 +320,7 @@ public class EQualityLabsController {
 		userDetailsVO.setPassword(pwd);
 
 		if (equalityLabsServiceImpl.getRegisteredUserId(userDetailsVO) == 0) {
-			
+
 			flag = equalityLabsServiceImpl.saveRegisteredUserDetails(userDetailsVO);
 
 			if (flag) {
@@ -329,31 +338,30 @@ public class EQualityLabsController {
 
 		return flag ? "success" : "failure";
 	}
-	
 
-@RequestMapping(value = "/Registerlogin", method = RequestMethod.GET)
-	public @ResponseBody String registerlogin(HttpServletRequest request, ModelMap modelMap, UserDetailsVo userDetailsVO)
-			throws Exception {
-		String email=request.getParameter("email");
+	@RequestMapping(value = "/Registerlogin", method = RequestMethod.GET)
+	public @ResponseBody String registerlogin(HttpServletRequest request, ModelMap modelMap,
+			UserDetailsVo userDetailsVO) throws Exception {
+		String email = request.getParameter("email");
 		boolean userAlreadyExists = equalityLabsServiceImpl.userExists(email);
 		return userAlreadyExists ? "success" : "failure";
 	}
 
 	@RequestMapping(value = "/loginUserDetails", method = RequestMethod.GET)
-	public boolean getLoginUserDetails(HttpServletRequest request, HttpServletResponse response, ModelMap map,HttpSession session, @RequestParam("emailId") String emailId) throws Exception {
-		
-		String email=request.getParameter("regmail");
-		
+	public boolean getLoginUserDetails(HttpServletRequest request, HttpServletResponse response, ModelMap map,
+			HttpSession session, @RequestParam("emailId") String emailId) throws Exception {
+
+		String email = request.getParameter("regmail");
+
 		UserDetailsVo userDetailsVO = equalityLabsServiceImpl.fetchRegisteredUserDetails(email);
 		if (userDetailsVO != null && userDetailsVO.getUserId().toString().length() > 0) {
 
-				return true;
-				
+			return true;
+
 		}
-		
+
 		return false;
 	}
-	
 
 	@RequestMapping(value = "/reglogin", method = RequestMethod.GET)
 	public String validateLogin(HttpServletRequest request, ModelMap modelMap, @RequestParam("emailid") String emailid,
@@ -397,9 +405,9 @@ public class EQualityLabsController {
 		String receivedEmail = emailId;
 		session.setAttribute("emailId", receivedEmail);
 		return "myProfile";
-		
+
 	}
-	
+
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
 	public @ResponseBody String changePasswordPage(HttpServletRequest request, ModelMap modelMap, HttpSession session)
 			throws Exception {
@@ -417,42 +425,44 @@ public class EQualityLabsController {
 			e.printStackTrace();
 		}
 		userDetails.setPassword(pwd);
-		 passwordUpdated = equalityLabsServiceImpl.userMasterChanagePassword(userDetails);
+		passwordUpdated = equalityLabsServiceImpl.userMasterChanagePassword(userDetails);
 
 		return passwordUpdated ? "success" : "failure";
 
-		/*boolean passwordUpdated = equalityLabsServiceImpl.userMasterChanagePassword(userDetails);
-		if (passwordUpdated) {
-			modelMap.addAttribute("VTO", env.getProperty("pwdChanged"));
-			return new ModelAndView("login");
-		} else {
-			modelMap.addAttribute("update", env.getProperty("pwdNotUpdated"));
-			return new ModelAndView("index");
-		}*/
+		/*
+		 * boolean passwordUpdated =
+		 * equalityLabsServiceImpl.userMasterChanagePassword(userDetails); if
+		 * (passwordUpdated) { modelMap.addAttribute("VTO",
+		 * env.getProperty("pwdChanged")); return new ModelAndView("login"); } else {
+		 * modelMap.addAttribute("update", env.getProperty("pwdNotUpdated")); return new
+		 * ModelAndView("index"); }
+		 */
 	}
-	
+
 	@RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
 	public String getForgotpasswordPage(HttpServletRequest request, HttpServletResponse response, ModelMap map,
 			HttpSession session, @RequestParam("emailId") String emailId) throws Exception {
-			String receivedEmail = emailId;
-			session.setAttribute("emailId", receivedEmail);
-			return "forgotpassword";
+		String receivedEmail = emailId;
+		session.setAttribute("emailId", receivedEmail);
+		return "forgotpassword";
 	}
-	
+
 	@RequestMapping(value = "/checkUserName", method = RequestMethod.GET)
-	public boolean getUserDetails(HttpServletRequest request, HttpServletResponse response, ModelMap map,HttpSession session, @RequestParam("emailId") String emailId) throws Exception {
-		
-		String email=request.getParameter("regmail");
-		
+	public boolean getUserDetails(HttpServletRequest request, HttpServletResponse response, ModelMap map,
+			HttpSession session, @RequestParam("emailId") String emailId) throws Exception {
+
+		String email = request.getParameter("regmail");
+
 		UserDetailsVo userDetailsVO = equalityLabsServiceImpl.fetchRegisteredUserDetails(email);
 		if (userDetailsVO != null && userDetailsVO.getUserId().toString().length() > 0) {
 
-				return true;
-				
+			return true;
+
 		}
-		
+
 		return false;
 	}
+
 	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
 	public ModelAndView confirmPassword(HttpServletRequest request, ModelMap modelMap, HttpSession session)
 			throws Exception {
@@ -483,14 +493,14 @@ public class EQualityLabsController {
 	}
 
 	@RequestMapping(value = "/contactUs", method = RequestMethod.POST)
-	public  @ResponseBody String contactUs(HttpServletRequest request, ModelMap modelMap, HttpSession session)
+	public @ResponseBody String contactUs(HttpServletRequest request, ModelMap modelMap, HttpSession session)
 			throws Exception {
 
 		logger.info("================>+Enetered into contactUs Page");
 		String email = request.getParameter("email");
-		String fName =  request.getParameter("fName");
+		String fName = request.getParameter("fName");
 		String message = request.getParameter("message");
-		logger.info("================>+Enetered into contactUs Page"+email+fName+message);
+		logger.info("================>+Enetered into contactUs Page" + email + fName + message);
 		boolean mailSent = false;
 		UserDetailsVo userDetailsVO = equalityLabsServiceImpl.fetchRegisteredUserDetails(email);
 		if (userDetailsVO != null && userDetailsVO.getUserId().toString().length() > 0) {
@@ -502,19 +512,16 @@ public class EQualityLabsController {
 			String msgBody = mailService.prepareMail(userDetailsVO, "ResetPassword");
 			mailSent = mailService.sendMail(toAddress, subject, msgBody);
 		}
-		
 
 		return mailSent ? "success" : "failure";
-		
-		
-			//return new ModelAndView("index");
-		
+
+		// return new ModelAndView("index");
+
 	}
-	
+
 	@RequestMapping(value = "/prouser", method = RequestMethod.POST)
-	public String getWebUrlsFromPage(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap)
-			 {
-		
+	public String getWebUrlsFromPage(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+
 		String domainUrl = request.getParameter("domainUrl");
 		ResponseURL rs;
 		try {
@@ -522,10 +529,8 @@ public class EQualityLabsController {
 			List<String> urlLists = rs.getSetOfURL();
 			if (!urlLists.isEmpty() && !(urlLists == null)) {
 				modelMap.addAttribute("weburls", urlLists);
-			}
-			else
-			{
-			modelMap.addAttribute("weburls", "");
+			} else {
+				modelMap.addAttribute("weburls", "");
 			}
 
 		} catch (MalformedURLException e) {
@@ -534,23 +539,21 @@ public class EQualityLabsController {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return "weburls";
 	}
 
 	@RequestMapping(value = "/prousertest", method = RequestMethod.GET)
-	public String getProUserTestPage(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,HttpSession session)
-			throws Exception {
+	public String getProUserTestPage(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap,
+			HttpSession session) throws Exception {
 		String emailId = (String) session.getAttribute("emailId");
 
 		return "prousertest";
 	}
-
 
 	@RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)
 	public @ResponseBody String sendPasswordMail(HttpServletRequest request, HttpSession session, ModelMap modelMap,
@@ -572,10 +575,10 @@ public class EQualityLabsController {
 			mailSent = mailService.sendMail(toAddress, subject, msgBody);
 		}
 		boolean userAlreadyExists = equalityLabsServiceImpl.userExists("email");
-        if (!userAlreadyExists) {
-			
-        	session = request.getSession();
-        	session.setAttribute("error","User not exist in the database ! Please Register now");
+		if (!userAlreadyExists) {
+
+			session = request.getSession();
+			session.setAttribute("error", "User not exist in the database ! Please Register now");
 		}
 
 		return mailSent ? "success" : "failure";
@@ -586,7 +589,7 @@ public class EQualityLabsController {
 		logger.debug("logout()");
 		HttpSession httpSession = request.getSession();
 		httpSession.invalidate();
-		//String id = (String) request.getAttribute("username");
+		// String id = (String) request.getAttribute("username");
 
 		return "redirect:login.html";
 	}
@@ -604,7 +607,7 @@ public class EQualityLabsController {
 		boolean flag = false;
 		String emailId = request.getParameter("clientaccount_email");
 		UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(emailId);
-		//UserDetailsVo userDetailsVO = new UserDetailsVo();
+		// UserDetailsVo userDetailsVO = new UserDetailsVo();
 		userDetails.setFirstName(request.getParameter("clientaccount_name"));
 		userDetails.setLastName(request.getParameter("clientaccount_lname"));
 		userDetails.setEmail(request.getParameter("clientaccount_email"));
@@ -613,83 +616,82 @@ public class EQualityLabsController {
 		userDetails.setWebsiteUrl(request.getParameter("clientaccount_website"));
 		userDetails.setTimeZone(request.getParameter("clientaccount_timezone"));
 		userDetails.setCountry(request.getParameter("socialserver_corebundle_clientaccount_country"));
-		
-		if (equalityLabsServiceImpl.getRegisteredUserId(userDetails) != 0 ) {
+
+		if (equalityLabsServiceImpl.getRegisteredUserId(userDetails) != 0) {
 
 			flag = equalityLabsServiceImpl.savepersonalInfoDetails(userDetails);
 
-			
 		}
 
 		return flag ? "success" : "failure";
 	}
-	
-	
+
 	@RequestMapping(value = "/PaymentDetails", method = RequestMethod.GET)
-	public String processingPaymentDetails(HttpServletRequest request, ModelMap modelMap, HttpServletResponse httpresponse,HttpSession session)
-			throws Exception {
-		
+	public String processingPaymentDetails(HttpServletRequest request, ModelMap modelMap,
+			HttpServletResponse httpresponse, HttpSession session) throws Exception {
+
 		String emailId = (String) session.getAttribute("emailId");
-		if (emailId==null) {
+		if (emailId == null) {
 			return "login";
+		} else {
+			String email = request.getParameter("email");
+			UserDetailsVo userDetails = equalityLabsServiceImpl.fetchRegisteredUserDetails(email);
+			;
+			modelMap.addAttribute("userDetails", userDetails);
+
+			return "paymentDetails";
 		}
-		else {
-			String email=request.getParameter("email");	 
-			 UserDetailsVo userDetails =equalityLabsServiceImpl.fetchRegisteredUserDetails(email);;
-			 modelMap.addAttribute("userDetails", userDetails);
-			 
-			 return "paymentDetails";
-		}
-		 
+
 	}
-	
+
 	@RequestMapping(value = "/error", method = RequestMethod.GET)
-    public ModelAndView renderErrorPage(HttpServletRequest httpRequest) {
-         
-        ModelAndView error = new ModelAndView("error");
-        String errorMsg = "";
-        int httpErrorCode = getErrorCode(httpRequest);
- 
-        switch (httpErrorCode) {
-            case 400: {
-                errorMsg = "Http Error Code: 400. Bad Request";
-                break;
-            }
-            case 401: {
-                errorMsg = "Http Error Code: 401. Unauthorized";
-                break;
-            }
-            case 402: {
-                errorMsg = "Http Error Code: 402. Bad Request";
-                break;
-            }
-            case 404: {
-                errorMsg = "Http Error Code: 404. Resource not found";
-                break;
-            }
-            case 500: {
-                errorMsg = "Http Error Code: 500. Internal Server Error";
-                break;
-            }
-        }
-        error.addObject("errorMsg", errorMsg);
-        return error;
-    }
-	 private int getErrorCode(HttpServletRequest httpRequest) {
-	        return (Integer) httpRequest
-	          .getAttribute("javax.servlet.error.status_code");
-	    }
-	 
-	 
-	 @ResponseBody
-	 @ExceptionHandler(EQualityLabsException.class)
-	 public String myException(EQualityLabsException exception){
-	  return "exception caught message="+ exception.getMessage();
-	 }
-	 
-	/* @ResponseBody
-	 @ExceptionHandler(MyGlobalException.class)
-	 public String myGlobalException(MyGlobalException exception){
-	  return "exception caught message="+ exception.getMessage();
-	 }*/
+	public ModelAndView renderErrorPage(HttpServletRequest httpRequest) {
+
+		ModelAndView error = new ModelAndView("error");
+		String errorMsg = "";
+		int httpErrorCode = getErrorCode(httpRequest);
+
+		switch (httpErrorCode) {
+		case 400: {
+			errorMsg = "Http Error Code: 400. Bad Request";
+			break;
+		}
+		case 401: {
+			errorMsg = "Http Error Code: 401. Unauthorized";
+			break;
+		}
+		case 402: {
+			errorMsg = "Http Error Code: 402. Bad Request";
+			break;
+		}
+		case 404: {
+			errorMsg = "Http Error Code: 404. Resource not found";
+			break;
+		}
+		case 500: {
+			errorMsg = "Http Error Code: 500. Internal Server Error";
+			break;
+		}
+		}
+		error.addObject("errorMsg", errorMsg);
+		return error;
+	}
+
+	private int getErrorCode(HttpServletRequest httpRequest) {
+		return (Integer) httpRequest.getAttribute("javax.servlet.error.status_code");
+	}
+
+	@ResponseBody
+	@ExceptionHandler(EQualityLabsException.class)
+	public String myException(EQualityLabsException exception) {
+		return "exception caught message=" + exception.getMessage();
+	}
+
+	/*
+	 * @ResponseBody
+	 * 
+	 * @ExceptionHandler(MyGlobalException.class) public String
+	 * myGlobalException(MyGlobalException exception){ return
+	 * "exception caught message="+ exception.getMessage(); }
+	 */
 }
