@@ -24,6 +24,7 @@ import com.prakat.model.EQualityLabsVo;
 import com.prakat.model.TenonApiVo;
 import com.prakat.model.TenonByWCAG;
 import com.prakat.model.UserDetailsVo;
+import com.prakat.model.WaveApiByWCAG;
 
 @Repository
 @Transactional
@@ -135,6 +136,41 @@ public class TenonApiDaoImpl implements TenonApiDao {
 			int userId=tenonbyWcag.getUserId();
 			tenonbyWcag.setUserId(userId);
 			session.saveOrUpdate(tenonbyWcag);
+			txn.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage());
+		} finally {
+			if (!txn.wasCommitted()) {
+				txn.rollback();
+			}
+
+			session.flush();
+			session.close();
+		}
+
+	}
+	public void saveDetailsOfAllUrlWaveApi(WaveApiByWCAG wavebyWcag) {
+		/*
+		 * Configuration configuration = new Configuration();
+		 * configuration.configure(); ServiceRegistry serviceRegistry = new
+		 * ServiceRegistryBuilder().applySettings(
+		 * configuration.getProperties()). buildServiceRegistry();
+		 * SessionFactory sessionFactory =
+		 * configuration.buildSessionFactory(serviceRegistry);
+		 */
+		Session session = null;
+
+		Transaction txn = null;
+		try {
+			System.out.println("witiout is comming");
+			SessionFactory sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+			session = sessionFactory.openSession();
+			txn = session.beginTransaction();
+			//tenonbyWcag.setUserId(userId);
+			int userId=wavebyWcag.getUserId();
+			wavebyWcag.setUserId(userId);
+			session.saveOrUpdate(wavebyWcag);
 			txn.commit();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -43,6 +43,7 @@
 		<mapping class="com.prakat.model.AcheckerResultsetVo" />
 		<mapping class="com.prakat.model.ACheckerVo" />
 		<mapping class="com.prakat.model.PaymentVo" />
+		<mapping class="com.prakat.model.WaveApiByWCAG"/>
 		
 	</session-factory>
 </hibernate-configuration>

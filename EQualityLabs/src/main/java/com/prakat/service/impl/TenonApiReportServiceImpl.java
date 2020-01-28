@@ -116,7 +116,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		tenonByWCAG = new TenonByWCAG();
 
 		String urlParameters = "key=" + key + "&url=" + url;
-		System.out.println("url parameter......!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + urlParameters);
+		System.out.println("url parameter......!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+ urlParameters);
 
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 		int postDataLength = postData.length;
@@ -154,9 +154,9 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			if (array.length() == 0) {
 				tenonApiVo = new TenonApiVo();
 
-				tenonApiVos.add(tenonApiVo);
+				tenonApiVos.add(tenonApiVo);	
 			} else {
-				for (int i = 0; i < array.length(); i++) {
+				for (int i = 0; i < 2; i++) {
 					tenonApiVo = new TenonApiVo();
 					String Standards = array.getJSONObject(i).getString("standards").replace("\"", "");
 					TenonApiVo tenonApidetails = util.GetDetailsFromWCAG(Standards);
@@ -840,7 +840,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		Date exclDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
 		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
-		String filename = dir_path + "tenon_api" + "_" + 7 + ".xlsx";
+		String filename = dir_path + "tenon_api" + "_" + 2 + ".xlsx";
 		// create a new Excel sheet
 		FileInputStream fis = new FileInputStream(new File(filename));
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
