@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -116,7 +117,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		tenonByWCAG = new TenonByWCAG();
 
 		String urlParameters = "key=" + key + "&url=" + url;
-		System.out.println("url parameter......!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+ urlParameters);
+		System.out.println("url parameter......!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + urlParameters);
 
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 		int postDataLength = postData.length;
@@ -145,7 +146,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			rd.close();
 
 			JSONObject json = new JSONObject(response.toString());
-
+			PrintStream fileOut = new PrintStream(new File("C:\\Users\\Prakat-L-055\\Desktop\\Tenon_api_format.txt"));
+			fileOut.println(json);
 			JSONObject json1 = (json.getJSONObject("request"));
 			logger.debug(json1.getString("url"));
 			tenonByWCAG.setUrl(json1.getString("url"));
@@ -154,9 +156,9 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			if (array.length() == 0) {
 				tenonApiVo = new TenonApiVo();
 
-				tenonApiVos.add(tenonApiVo);	
+				tenonApiVos.add(tenonApiVo);
 			} else {
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 50; i++) {
 					tenonApiVo = new TenonApiVo();
 					String Standards = array.getJSONObject(i).getString("standards").replace("\"", "");
 					TenonApiVo tenonApidetails = util.GetDetailsFromWCAG(Standards);
@@ -840,11 +842,12 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		Date exclDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
 		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
-		String filename = dir_path + "tenon_api" + "_" + 2 + ".xlsx";
+		String filename = dir_path + "tenon_api_" + dateFormat.format(exclDate) + ".xlsx";
+
 		// create a new Excel sheet
-		FileInputStream fis = new FileInputStream(new File(filename));
-		XSSFWorkbook workbook = new XSSFWorkbook(fis);
-		XSSFSheet sheet = workbook.createSheet("Tenon Accesbility Report Details");
+		// FileInputStream fis = new FileInputStream(new File(filename));
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Tenon Accesbility Report summary");
 		sheet.setDefaultColumnWidth(30);
 
 		// create style for header cells
@@ -1165,8 +1168,8 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		 * if (xls.createNewFile()) { logger.debug("File is created!"); } else {
 		 * logger.debug("File already exists."); }
 		 */
-		// boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
-		boolean isMailSent = true;
+		boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
+		//boolean isMailSent = true;
 		return isMailSent;
 
 	}
