@@ -64,7 +64,90 @@ public class TenonApiVo implements Serializable {
 		this.uId = uId;
 	}*/
 
+	@Column(name = "errorDescription")
+	private String errorDescription;
 	
+	@Column(name = "resultTitle")
+	private String resultTitle;
+	
+	@Column(name = "standards")
+	private String standards;
+	
+	@Column(name = "errorTitle")
+	private String errorTitle;
+	
+	@Column(name = "errorSnippet")
+	private String errorSnippet;
+
+	/**
+	 * @return the errorDescription
+	 */
+	public String getErrorDescription() {
+		return errorDescription;
+	}
+
+	/**
+	 * @param errorDescription the errorDescription to set
+	 */
+	public void setErrorDescription(String errorDescription) {
+		this.errorDescription = errorDescription;
+	}
+
+	/**
+	 * @return the resultTitle
+	 */
+	public String getResultTitle() {
+		return resultTitle;
+	}
+
+	/**
+	 * @param resultTitle the resultTitle to set
+	 */
+	public void setResultTitle(String resultTitle) {
+		this.resultTitle = resultTitle;
+	}
+
+	/**
+	 * @return the standards
+	 */
+	public String getStandards() {
+		return standards;
+	}
+
+	/**
+	 * @param standards the standards to set
+	 */
+	public void setStandards(String standards) {
+		this.standards = standards;
+	}
+
+	/**
+	 * @return the errorTitle
+	 */
+	public String getErrorTitle() {
+		return errorTitle;
+	}
+
+	/**
+	 * @param errorTitle the errorTitle to set
+	 */
+	public void setErrorTitle(String errorTitle) {
+		this.errorTitle = errorTitle;
+	}
+
+	/**
+	 * @return the errorSnippet
+	 */
+	public String getErrorSnippet() {
+		return errorSnippet;
+	}
+
+	/**
+	 * @param errorSnippet the errorSnippet to set
+	 */
+	public void setErrorSnippet(String errorSnippet) {
+		this.errorSnippet = errorSnippet;
+	}
 
 	public String getWCAG_Criteria() {
 		return WCAG_Criteria;

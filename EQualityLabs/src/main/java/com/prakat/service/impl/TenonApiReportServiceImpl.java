@@ -150,7 +150,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 			fileOut.println(json);
 			JSONObject json1 = (json.getJSONObject("request"));
 			logger.debug(json1.getString("url"));
-			tenonByWCAG.setUrl(json1.getString("url"));
+			tenonByWCAG.setUrl(url);
 			JSONArray array = json.getJSONArray("resultSet");
 
 			if (array.length() == 0) {
@@ -158,7 +158,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 				tenonApiVos.add(tenonApiVo);
 			} else {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < array.length(); i++) {
 					tenonApiVo = new TenonApiVo();
 					String Standards = array.getJSONObject(i).getString("standards").replace("\"", "");
 					TenonApiVo tenonApidetails = util.GetDetailsFromWCAG(Standards);
@@ -173,6 +173,11 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 					tenonApiVo.setWCAG_Criteria(
 							tenonApidetails.getWCAG_Level() + "." + tenonApidetails.getWCAG_Principle() + "."
 									+ tenonApidetails.getWCAG_Guideline() + "_" + tenonApidetails.getWCAG_Sublevel());
+					tenonApiVo.setErrorTitle(array.getJSONObject(i).getString("errorTitle"));
+					tenonApiVo.setErrorSnippet(array.getJSONObject(i).getString("errorSnippet"));
+					tenonApiVo.setStandards(Standards);
+					tenonApiVo.setErrorDescription(array.getJSONObject(i).getString("errorDescription"));
+					tenonApiVo.setResultTitle(array.getJSONObject(i).getString("resultTitle"));
 					tenonApiVos.add(tenonApiVo);
 
 				}
@@ -841,13 +846,14 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 		Date exclDate = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
+		SimpleDateFormat simeDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dir_path = "C:\\Users\\Prakat-L-055\\Documents\\";
 		String filename = dir_path + "tenon_api_" + dateFormat.format(exclDate) + ".xlsx";
 
 		// create a new Excel sheet
 		// FileInputStream fis = new FileInputStream(new File(filename));
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("Tenon Accesbility Report summary");
+		XSSFSheet sheet = workbook.createSheet("Accesbility Report summary");
 		sheet.setDefaultColumnWidth(30);
 
 		// create style for header cells
@@ -926,7 +932,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				date.getCell(2).setCellStyle(pstyle);
 				date.getCell(4).setCellStyle(pstyle);
 				// date.createCell(3).setCellValue(vo.getCreateDate());
-				date.createCell(3).setCellValue(dateFormat.format(exclDate));
+				date.createCell(3).setCellValue(simeDateFormat.format(exclDate));
 				date.getCell(3).setCellStyle(ustyle);
 
 				XSSFRow totaltest = sheet.createRow(4);
@@ -957,7 +963,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				passedTest.getCell(3).setCellStyle(ustyle);
 
 				// workbook = new XSSFWorkbook();
-				XSSFSheet pieSheet = workbook.createSheet("Pie Sheet" + "_" + i + dateFormat.format(exclDate));
+				XSSFSheet pieSheet = workbook.createSheet("Pie Chart");
 				sheet.setColumnWidth(0, 10000);
 
 				CellStyle estyle = workbook.createCellStyle();
@@ -1033,7 +1039,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				// break;
 
 				///// ----Bar Chart-------/////
-				XSSFSheet barSheet = workbook.createSheet("Bar Sheet" + "_" + i + dateFormat.format(exclDate));
+				XSSFSheet barSheet = workbook.createSheet("Bar chart");
 				DefaultCategoryDataset my_bar_chart_dataset = new DefaultCategoryDataset();
 				//// ----Bar Data----///
 
@@ -1085,27 +1091,27 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 		XSSFRow header = sheet.createRow(7);
 
-		header.createCell(0).setCellValue("Url");
+		header.createCell(0).setCellValue("WCAG Criteria");
 		header.getCell(0).setCellStyle(style);
 
-		header.createCell(1).setCellValue("WCAG Criteria");
+		header.createCell(1).setCellValue("Result");
 		header.getCell(1).setCellStyle(style);
 
-		header.createCell(2).setCellValue("Level");
+		header.createCell(2).setCellValue("Error Title");
 		header.getCell(2).setCellStyle(style);
 
 		/*
 		 * header.createCell(3).setCellValue("WCAG Principle");
 		 * header.getCell(3).setCellStyle(style);
 		 */
-		header.createCell(3).setCellValue("Principle description");
+		header.createCell(3).setCellValue("Error Description");
 		header.getCell(3).setCellStyle(style);
 
-		header.createCell(4).setCellValue("WCAG Guideline");
+		header.createCell(4).setCellValue("Error Snippet");
 		header.getCell(4).setCellStyle(style);
 
-		header.createCell(5).setCellValue("Guideline Description");
-		header.getCell(5).setCellStyle(style);
+		// header.createCell(5).setCellValue("Guideline Description");
+		// header.getCell(5).setCellStyle(style);
 
 		/*
 		 * header.createCell(7).setCellValue("WCAG_Sublevel");
@@ -1124,21 +1130,21 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 			if (urlvo.getUrl() != null && res != null) {
 				for (TenonApiVo result : res) {
-					String s = result.getWCAG_Level();
-					String[] str = s.split("2");
-					String s1 = str[1];
-					String s2 = urlvo.getUrl();
-					String s3 = s2.replaceAll("/tenon.io/", "/equality_labs/");
+					/*
+					 * String s = result.getWCAG_Level(); String[] str = s.split("2"); String s1 =
+					 * str[1]; String s2 = urlvo.getUrl(); String s3 = s2.replaceAll("/tenon.io/",
+					 * "/equality_labs/");
+					 */
 					aRow = sheet.createRow(rowCount++);
-					aRow.createCell(0).setCellValue(s3);
-					aRow.createCell(1).setCellValue(result.getWCAG_Criteria());
-					aRow.createCell(2).setCellValue(s1);
+					aRow.createCell(0).setCellValue(result.getStandards());
+					aRow.createCell(1).setCellValue(result.getResultTitle());
+					aRow.createCell(2).setCellValue(result.getErrorTitle());
 
 					// aRow.createCell(3).setCellValue(result.getWCAG_Principle());
-					aRow.createCell(3).setCellValue(result.getPrinciple_Description());
+					aRow.createCell(3).setCellValue(result.getErrorDescription());
 
-					aRow.createCell(4).setCellValue(result.getWCAG_Guideline());
-					aRow.createCell(5).setCellValue(result.getGuideline_Description());
+					aRow.createCell(4).setCellValue(result.getErrorSnippet());
+					// aRow.createCell(5).setCellValue(result.getGuideline_Description());
 
 					// aRow.createCell(7).setCellValue(result.getWCAG_Sublevel());
 					// aRow.createCell(8).setCellValue(result.getSublevel_Description());
@@ -1169,7 +1175,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		 * logger.debug("File already exists."); }
 		 */
 		boolean isMailSent = emailSender.sendMail(filename, workbook, emailId);
-		//boolean isMailSent = true;
+		// boolean isMailSent = true;
 		return isMailSent;
 
 	}
@@ -1180,7 +1186,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
 		// create a new Excel sheet
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("Tenon Accesbility Report Details");
+		XSSFSheet sheet = workbook.createSheet("Accesbility Report Details");
 		sheet.setDefaultColumnWidth(30);
 
 		// create style for header cells
@@ -1288,7 +1294,7 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 				passedTest.getCell(3).setCellStyle(ustyle);
 
 				// workbook = new XSSFWorkbook();
-				XSSFSheet pieSheet = workbook.createSheet("Pie Sheet" + "_" + i + dateFormat.format(exclDate));
+				XSSFSheet pieSheet = workbook.createSheet("Pie Chart");
 				sheet.setColumnWidth(0, 10000);
 
 				CellStyle estyle = workbook.createCellStyle();
@@ -1360,32 +1366,20 @@ public class TenonApiReportServiceImpl implements TenonApiReportService {
 
 		XSSFRow header = sheet.createRow(7);
 
-		header.createCell(0).setCellValue("Url");
+		header.createCell(0).setCellValue("WCAG ");
 		header.getCell(0).setCellStyle(style);
 
-		header.createCell(1).setCellValue("WCAG Criteria");
+		header.createCell(1).setCellValue("Result Title");
 		header.getCell(1).setCellStyle(style);
 
-		header.createCell(2).setCellValue("Level");
+		header.createCell(2).setCellValue("Error Title");
 		header.getCell(2).setCellStyle(style);
 
-		header.createCell(3).setCellValue("WCAG Principle");
+		header.createCell(3).setCellValue("Error Description");
 		header.getCell(3).setCellStyle(style);
 
-		header.createCell(4).setCellValue("Principle description");
+		header.createCell(4).setCellValue("Error Snipet");
 		header.getCell(4).setCellStyle(style);
-
-		header.createCell(5).setCellValue("WCAG Guideline");
-		header.getCell(5).setCellStyle(style);
-
-		header.createCell(6).setCellValue("Guideline Description");
-		header.getCell(6).setCellStyle(style);
-
-		header.createCell(7).setCellValue("WCAG_Sublevel");
-		header.getCell(7).setCellStyle(style);
-
-		header.createCell(8).setCellValue("Sublevel Description");
-		header.getCell(8).setCellStyle(style);
 		// create data rows
 		int rowCount = 8;
 		List<TenonApiVo> res = new ArrayList<TenonApiVo>();
