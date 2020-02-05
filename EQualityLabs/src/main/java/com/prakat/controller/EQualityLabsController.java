@@ -87,7 +87,7 @@ public class EQualityLabsController {
 			int userId = userDetails.getUserId();
 			List<TenonByWCAG> tenonApiVos = tenonService.getTenonReportServiceByWCAGForFreeUser(tenonApiURL, domainUrl,
 					apiKey, emailId, userId);
-			List<WaveApiByWCAG> waveApi=waveApiService.waveApiMethod(waveApiKey, waveApiUrl,domainUrl,userId);
+			//List<WaveApiByWCAG> waveApi=waveApiService.waveApiMethod(waveApiKey, waveApiUrl,domainUrl,userId);
 
 			for (int i = 0; i <= tenonApiVos.size() - 1; i++) {
 				System.out.println("tenoon api vos isss...!!!" + tenonApiVos.get(i));
